@@ -54,11 +54,37 @@ class Goban:
             raise InvalidPositionError("Position is empty", x, y)
         color = self.get_status(x, y)
         opponent_color = Status.WHITE if color == Status.BLACK else Status.BLACK
-        if (
-            self.get_status(x - 1, y) == opponent_color
-            and self.get_status(x + 1, y) == opponent_color
-            and self.get_status(x, y - 1) == opponent_color
-            and self.get_status(x, y + 1) == opponent_color
-        ):
-            return True
-        return False
+        form = {(x, y)}
+        neighbors_checked: set[tuple[int, int]] = set()
+        return self._is_taken(x, y, form, neighbors_checked, color, opponent_color)
+
+    def _is_taken(
+        self,
+        x: int,
+        y: int,
+        form: set[tuple[int, int]],
+        neighbors_checked: set[tuple[int, int]],
+        color: Status,
+        opponent_color: Status,
+    ) -> bool:
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            coordinates = (x + dx, y + dy)
+            if coordinates in neighbors_checked:
+                continue
+            if coordinates in form:
+                continue
+            neighbors_checked.add(coordinates)
+            status = self.get_status(*coordinates)
+            if status == Status.OUT:
+                continue
+            elif status == opponent_color:
+                neighbors_checked.add(coordinates)
+            elif status == color:
+                form.add(coordinates)
+                if not self._is_taken(
+                    *coordinates, form, neighbors_checked, color, opponent_color
+                ):
+                    return False
+            elif status == Status.EMPTY:
+                return False
+        return True
