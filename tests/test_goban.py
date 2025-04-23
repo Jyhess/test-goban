@@ -127,7 +127,6 @@ def test_white_is_not_taken_when_it_has_a_liberty() -> None:
     assert goban.is_taken(1, 1) is False
 
 
-# TODO Add case out of border
 def test_black_shape_is_taken_when_surrounded() -> None:
     goban = Goban(
         [

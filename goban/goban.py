@@ -52,4 +52,13 @@ class Goban:
             raise InvalidPositionError("Position is out of goban", x, y)
         if status == Status.EMPTY:
             raise InvalidPositionError("Position is empty", x, y)
-        raise NotImplementedError
+        color = self.get_status(x, y)
+        opponent_color = Status.WHITE if color == Status.BLACK else Status.BLACK
+        if (
+            self.get_status(x - 1, y) == opponent_color
+            and self.get_status(x + 1, y) == opponent_color
+            and self.get_status(x, y - 1) == opponent_color
+            and self.get_status(x, y + 1) == opponent_color
+        ):
+            return True
+        return False
