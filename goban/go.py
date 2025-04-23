@@ -13,5 +13,5 @@ class Go:
 
     def is_taken(self, x: int, y: int) -> bool:
         """Return True if the form at given position is surrounded"""
-        analyser = PositionAnalyzer(self._goban, x, y)
-        return analyser.is_taken()
+        analyser = PositionAnalyzer(self._goban)
+        return analyser.is_taken(x, y)

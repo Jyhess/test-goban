@@ -5,9 +5,9 @@ from goban.goban import Goban
 from goban.position_analyzer import PositionAnalyzer
 
 
-def make_analyser(goban_data: list[str], x: int, y: int) -> PositionAnalyzer:
+def make_analyser(goban_data: list[str]) -> PositionAnalyzer:
     goban = Goban(goban_data)
-    return PositionAnalyzer(goban, x, y)
+    return PositionAnalyzer(goban)
 
 
 def test_is_taken_empty():
@@ -15,21 +15,20 @@ def test_is_taken_empty():
         ".o.",
         "..#",
     ]
-    analyser = make_analyser(goban, 0, 0)
+    analyser = make_analyser(goban)
     with pytest.raises(InvalidPositionError) as e:
-        analyser.is_taken()
+        analyser.is_taken(0, 0)
     assert str(e.value) == "Position is empty at (0,0)"
 
 
 def test_is_taken_invalid():
-    goban = Goban(
-        [
-            ".o.",
-            "..#",
-        ]
-    )
+    goban_data = [
+        ".o.",
+        "..#",
+    ]
+    analyser = make_analyser(goban_data)
     with pytest.raises(InvalidPositionError) as e:
-        PositionAnalyzer(goban, -1, 0)
+        analyser.is_taken(-1, 0)
     assert str(e.value) == "Position is out of goban at (-1,0)"
 
 
@@ -39,9 +38,9 @@ def test_white_is_taken_when_surrounded_by_black():
         "#o#",
         ".#.",
     ]
-    analyser = make_analyser(goban_data, 1, 1)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is True
+    assert analyser.is_taken(1, 1) is True
 
 
 def test_white_is_not_taken_when_it_has_a_liberty_on_top():
@@ -50,9 +49,9 @@ def test_white_is_not_taken_when_it_has_a_liberty_on_top():
         "#o#",
         ".#.",
     ]
-    analyser = make_analyser(goban_data, 1, 1)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(1, 1) is False
 
 
 def test_white_is_not_taken_when_it_has_a_liberty_on_left():
@@ -61,9 +60,9 @@ def test_white_is_not_taken_when_it_has_a_liberty_on_left():
         ".o#",
         ".#.",
     ]
-    analyser = make_analyser(goban_data, 1, 1)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(1, 1) is False
 
 
 def test_white_is_not_taken_when_it_has_a_liberty_on_right():
@@ -72,9 +71,9 @@ def test_white_is_not_taken_when_it_has_a_liberty_on_right():
         "#o.",
         ".#.",
     ]
-    analyser = make_analyser(goban_data, 1, 1)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(1, 1) is False
 
 
 def test_white_is_not_taken_when_it_has_a_liberty_on_bottom():
@@ -83,9 +82,9 @@ def test_white_is_not_taken_when_it_has_a_liberty_on_bottom():
         "#o#",
         "...",
     ]
-    analyser = make_analyser(goban_data, 1, 1)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(1, 1) is False
 
 
 @pytest.mark.parametrize("x, y", [(0, 1), (1, 1), (1, 2)])
@@ -96,9 +95,9 @@ def test_black_shape_is_taken_when_surrounded(x, y):
         "o#o",
         ".o.",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is True
+    assert analyser.is_taken(x, y) is True
 
 
 @pytest.mark.parametrize("x, y", [(0, 1), (1, 1), (1, 2)])
@@ -109,9 +108,9 @@ def test_black_shape_is_not_taken_when_it_has_a_liberty(x, y):
         "o#o",
         ".o.",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(x, y) is False
 
 
 @pytest.mark.parametrize("x, y", [(0, 1), (0, 2), (1, 1), (1, 2)])
@@ -122,9 +121,9 @@ def test_square_shape_is_taken(x, y):
         "##o",
         "oo.",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is True
+    assert analyser.is_taken(x, y) is True
 
 
 @pytest.mark.parametrize("x, y", [(0, 0), (4, 0), (0, 4), (4, 4)])
@@ -136,9 +135,9 @@ def test_corner_shape_is_taken(x, y):
         "o...#",
         "#o.#o",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is True
+    assert analyser.is_taken(x, y) is True
 
 
 @pytest.mark.parametrize("x, y", [(0, 0), (4, 0), (0, 4), (4, 4)])
@@ -150,9 +149,9 @@ def test_corner_shape_is_not_taken(x, y):
         "o...#",
         "#...o",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(x, y) is False
 
 
 @pytest.mark.parametrize("x, y", [(1, 1), (1, 2), (3, 3)])
@@ -164,9 +163,9 @@ def test_white_shape_is_not_taken_when_it_has_an_eye(x, y):
         "#ooo#",
         ".###.",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is False
+    assert analyser.is_taken(x, y) is False
 
 
 @pytest.mark.parametrize("x, y", [(1, 1), (1, 2), (3, 3)])
@@ -178,6 +177,6 @@ def test_white_shape_is_taken_when_eye_is_filled(x, y):
         "#ooo#",
         ".###.",
     ]
-    analyser = make_analyser(goban_data, x, y)
+    analyser = make_analyser(goban_data)
 
-    assert analyser.is_taken() is True
+    assert analyser.is_taken(x, y) is True
