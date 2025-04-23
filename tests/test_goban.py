@@ -142,7 +142,6 @@ def test_black_shape_is_taken_when_surrounded() -> None:
     assert goban.is_taken(1, 2) is True
 
 
-# TODO Add case out of border
 def test_black_shape_is_not_taken_when_it_has_a_liberty() -> None:
     goban = Goban(
         [
@@ -158,7 +157,6 @@ def test_black_shape_is_not_taken_when_it_has_a_liberty() -> None:
     assert goban.is_taken(1, 2) is False
 
 
-# TODO Add case out of border
 def test_square_shape_is_taken() -> None:
     goban = Goban(
         [
@@ -175,7 +173,67 @@ def test_square_shape_is_taken() -> None:
     assert goban.is_taken(1, 2) is True
 
 
-# TODO Add case 4 corners without liberty
+def test_corner_shape_is_taken() -> None:
+    goban = Goban(
+        [
+            "o#.o#",
+            "#...o",
+            ".....",
+            "o...#",
+            "#o.#o",
+        ]
+    )
+
+    assert goban.is_taken(0, 0) is True
+    assert goban.is_taken(4, 0) is True
+    assert goban.is_taken(0, 4) is True
+    assert goban.is_taken(4, 4) is True
 
 
-# TODO Add case 4 corners with 1 liberty
+def test_corner_shape_is_not_taken() -> None:
+    goban = Goban(
+        [
+            "o#.o#",
+            "o....",
+            ".....",
+            "o...#",
+            "#...o",
+        ]
+    )
+
+    assert goban.is_taken(0, 1) is False
+    assert goban.is_taken(4, 0) is False
+    assert goban.is_taken(0, 4) is False
+    assert goban.is_taken(4, 4) is False
+
+
+def test_white_shape_is_not_taken_when_it_has_an_eye() -> None:
+    goban = Goban(
+        [
+            ".###.",
+            "#ooo#",
+            "#o.o#",
+            "#ooo#",
+            ".###.",
+        ]
+    )
+
+    assert goban.is_taken(1, 1) is False
+    assert goban.is_taken(1, 2) is False
+    assert goban.is_taken(3, 3) is False
+
+
+def test_white_shape_is_taken_when_eye_is_filled() -> None:
+    goban = Goban(
+        [
+            ".###.",
+            "#ooo#",
+            "#o#o#",
+            "#ooo#",
+            ".###.",
+        ]
+    )
+
+    assert goban.is_taken(1, 1) is True
+    assert goban.is_taken(1, 2) is True
+    assert goban.is_taken(3, 3) is True
