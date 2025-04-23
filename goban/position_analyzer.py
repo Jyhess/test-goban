@@ -1,15 +1,14 @@
-from typing import Callable, Iterable
+from typing import Iterable
 
+from .goban import Goban
 from .invalid_position_error import InvalidPositionError
 from .status import Status
 
 
 class PositionAnalyzer:
-    def __init__(
-        self, x: int, y: int, get_status: Callable[[int, int], Status]
-    ) -> None:
-        self._get_status = get_status
-        status = self._get_status(x, y)
+    def __init__(self, goban: Goban, x: int, y: int) -> None:
+        self._goban = goban
+        status = self._goban.get_status(x, y)
         if status == Status.OUT:
             raise InvalidPositionError("Position is out of goban", x, y)
         self._coordinates = (x, y)
@@ -22,7 +21,7 @@ class PositionAnalyzer:
 
     def is_empty(self) -> bool:
         """Return True if there is no stone at given position"""
-        return self._get_status(*self._coordinates) == Status.EMPTY
+        return self._goban.get_status(*self._coordinates) == Status.EMPTY
 
     def is_taken(self) -> bool:
         """Return True if the form at given position is surrounded"""
@@ -36,7 +35,7 @@ class PositionAnalyzer:
     ) -> bool:
         self._form.add(coordinates)
         for neighbors in self._all_new_neighbors(coordinates):
-            status = self._get_status(*neighbors)
+            status = self._goban.get_status(*neighbors)
             if status == Status.EMPTY:
                 # Found a liberty, stone is free :)
                 return False

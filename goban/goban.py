@@ -1,7 +1,6 @@
 from typing import List
 
 from .invalid_goban_error import InvalidGobanError
-from .position_analyzer import PositionAnalyzer
 from .status import Status
 
 
@@ -36,8 +35,3 @@ class Goban:
         elif self._goban[y][x] == "#":
             return Status.BLACK
         raise ValueError(f"Unknown goban value {self._goban[y][x]}")
-
-    def is_taken(self, x: int, y: int) -> bool:
-        """Return True if the form at given position is surrounded"""
-        analyser = PositionAnalyzer(x, y, self.get_status)
-        return analyser.is_taken()

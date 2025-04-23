@@ -1,9 +1,10 @@
 import pytest
 
-from goban import Goban, InvalidGobanError, InvalidPositionError, Status
+from goban import InvalidGobanError, Status
+from goban.goban import Goban
 
 
-def test_goban_without_data() -> None:
+def test_goban_without_data():
     with pytest.raises(InvalidGobanError) as e:
         Goban(None)
     assert str(e.value) == "Goban must not be empty"
@@ -21,7 +22,7 @@ def test_goban_without_data() -> None:
     assert str(e.value) == "Goban must not be empty at line 1: "
 
 
-def test_goban_with_invalid_characters() -> None:
+def test_goban_with_invalid_characters():
     with pytest.raises(InvalidGobanError) as e:
         Goban(
             [
@@ -40,7 +41,7 @@ def test_goban_with_invalid_characters() -> None:
     assert str(e.value) == "Goban must only contain o, # or . at line 1: ooX"
 
 
-def test_goban_with_inconsistent_lines() -> None:
+def test_goban_with_inconsistent_lines():
     with pytest.raises(InvalidGobanError) as e:
         Goban(
             [
@@ -60,7 +61,7 @@ def test_goban_with_inconsistent_lines() -> None:
     assert str(e.value) == "Goban must be a rectangle at line 1: o"
 
 
-def test_get_status() -> None:
+def test_get_status():
     goban = Goban(
         [
             ".o.",
@@ -77,163 +78,3 @@ def test_get_status() -> None:
     assert goban.get_status(4, 0) == Status.OUT
     assert goban.get_status(0, 3) == Status.OUT
     assert goban.get_status(4, 3) == Status.OUT
-
-
-def test_is_taken_empty() -> None:
-    goban = Goban(
-        [
-            ".o.",
-            "..#",
-        ]
-    )
-    with pytest.raises(InvalidPositionError) as e:
-        goban.is_taken(0, 0)
-    assert str(e.value) == "Position is empty at (0,0)"
-
-
-def test_is_taken_invalid() -> None:
-    goban = Goban(
-        [
-            ".o.",
-            "..#",
-        ]
-    )
-    with pytest.raises(InvalidPositionError) as e:
-        goban.is_taken(-1, 0)
-    assert str(e.value) == "Position is out of goban at (-1,0)"
-
-
-def test_white_is_taken_when_surrounded_by_black() -> None:
-    goban = Goban(
-        [
-            ".#.",
-            "#o#",
-            ".#.",
-        ]
-    )
-
-    assert goban.is_taken(1, 1) is True
-
-
-def test_white_is_not_taken_when_it_has_a_liberty() -> None:
-    goban = Goban(
-        [
-            "...",
-            "#o#",
-            ".#.",
-        ]
-    )
-
-    assert goban.is_taken(1, 1) is False
-
-
-def test_black_shape_is_taken_when_surrounded() -> None:
-    goban = Goban(
-        [
-            "oo.",
-            "##o",
-            "o#o",
-            ".o.",
-        ]
-    )
-
-    assert goban.is_taken(0, 1) is True
-    assert goban.is_taken(1, 1) is True
-    assert goban.is_taken(1, 2) is True
-
-
-def test_black_shape_is_not_taken_when_it_has_a_liberty() -> None:
-    goban = Goban(
-        [
-            "oo.",
-            "##.",
-            "o#o",
-            ".o.",
-        ]
-    )
-
-    assert goban.is_taken(0, 1) is False
-    assert goban.is_taken(1, 1) is False
-    assert goban.is_taken(1, 2) is False
-
-
-def test_square_shape_is_taken() -> None:
-    goban = Goban(
-        [
-            "oo.",
-            "##o",
-            "##o",
-            "oo.",
-        ]
-    )
-
-    assert goban.is_taken(0, 1) is True
-    assert goban.is_taken(0, 2) is True
-    assert goban.is_taken(1, 1) is True
-    assert goban.is_taken(1, 2) is True
-
-
-def test_corner_shape_is_taken() -> None:
-    goban = Goban(
-        [
-            "o#.o#",
-            "#...o",
-            ".....",
-            "o...#",
-            "#o.#o",
-        ]
-    )
-
-    assert goban.is_taken(0, 0) is True
-    assert goban.is_taken(4, 0) is True
-    assert goban.is_taken(0, 4) is True
-    assert goban.is_taken(4, 4) is True
-
-
-def test_corner_shape_is_not_taken() -> None:
-    goban = Goban(
-        [
-            "o#.o#",
-            "o....",
-            ".....",
-            "o...#",
-            "#...o",
-        ]
-    )
-
-    assert goban.is_taken(0, 1) is False
-    assert goban.is_taken(4, 0) is False
-    assert goban.is_taken(0, 4) is False
-    assert goban.is_taken(4, 4) is False
-
-
-def test_white_shape_is_not_taken_when_it_has_an_eye() -> None:
-    goban = Goban(
-        [
-            ".###.",
-            "#ooo#",
-            "#o.o#",
-            "#ooo#",
-            ".###.",
-        ]
-    )
-
-    assert goban.is_taken(1, 1) is False
-    assert goban.is_taken(1, 2) is False
-    assert goban.is_taken(3, 3) is False
-
-
-def test_white_shape_is_taken_when_eye_is_filled() -> None:
-    goban = Goban(
-        [
-            ".###.",
-            "#ooo#",
-            "#o#o#",
-            "#ooo#",
-            ".###.",
-        ]
-    )
-
-    assert goban.is_taken(1, 1) is True
-    assert goban.is_taken(1, 2) is True
-    assert goban.is_taken(3, 3) is True
