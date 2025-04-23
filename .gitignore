@@ -1,0 +1,9 @@
+# .gitignore
+__pycache__/
+*.pyc
+.venv/
+build/
+dist/
+.coverage
+htmlcov/
+.idea
