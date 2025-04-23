@@ -1,6 +1,6 @@
 import pytest
 
-from goban import Goban, InvalidGobanError, Status
+from goban import Goban, InvalidGobanError, InvalidPositionError, Status
 
 
 def test_goban_without_data() -> None:
@@ -77,6 +77,30 @@ def test_get_status() -> None:
     assert goban.get_status(4, 0) == Status.OUT
     assert goban.get_status(0, 3) == Status.OUT
     assert goban.get_status(4, 3) == Status.OUT
+
+
+def test_is_taken_empty() -> None:
+    goban = Goban(
+        [
+            ".o.",
+            "..#",
+        ]
+    )
+    with pytest.raises(InvalidPositionError) as e:
+        goban.is_taken(0, 0)
+    assert str(e.value) == "Position is empty at (0,0)"
+
+
+def test_is_taken_invalid() -> None:
+    goban = Goban(
+        [
+            ".o.",
+            "..#",
+        ]
+    )
+    with pytest.raises(InvalidPositionError) as e:
+        goban.is_taken(-1, 0)
+    assert str(e.value) == "Position is out of goban at (-1,0)"
 
 
 def test_white_is_taken_when_surrounded_by_black() -> None:

@@ -1,6 +1,7 @@
 from typing import List
 
 from .invalid_goban_error import InvalidGobanError
+from .invalid_position_error import InvalidPositionError
 from .status import Status
 
 
@@ -46,4 +47,9 @@ class Goban:
         raise ValueError(f"Unknown goban value {self._goban[y][x]}")
 
     def is_taken(self, x: int, y: int) -> bool:
+        status = self.get_status(x, y)
+        if status == Status.OUT:
+            raise InvalidPositionError("Position is out of goban", x, y)
+        if status == Status.EMPTY:
+            raise InvalidPositionError("Position is empty", x, y)
         raise NotImplementedError
