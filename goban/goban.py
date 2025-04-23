@@ -1,11 +1,22 @@
 from typing import List
 
+from .invalid_goban_error import InvalidGobanError
 from .status import Status
 
 
 class Goban:
     def __init__(self, goban: List[str]) -> None:
-        self.goban = goban
+        if not goban:
+            raise InvalidGobanError("Goban must not be empty", "", -1)
+        for i, line in enumerate(goban):
+            if not line:
+                raise InvalidGobanError("Goban must not be empty", line, i)
+            if len(line) != len(goban[0]):
+                raise InvalidGobanError("Goban must be a rectangle", line, i)
+            if not all(c in "o#." for c in line):
+                raise InvalidGobanError("Goban must only contain o, # or .", line, i)
+
+        self._goban = goban
 
     def get_status(self, x: int, y: int) -> Status:
         """
@@ -19,20 +30,20 @@ class Goban:
             a Status
         """
         if (
-            not self.goban
+            not self._goban
             or x < 0
             or y < 0
-            or y >= len(self.goban)
-            or x >= len(self.goban[0])
+            or y >= len(self._goban)
+            or x >= len(self._goban[0])
         ):
             return Status.OUT
-        elif self.goban[y][x] == ".":
+        elif self._goban[y][x] == ".":
             return Status.EMPTY
-        elif self.goban[y][x] == "o":
+        elif self._goban[y][x] == "o":
             return Status.WHITE
-        elif self.goban[y][x] == "#":
+        elif self._goban[y][x] == "#":
             return Status.BLACK
-        raise ValueError(f"Unknown goban value {self.goban[y][x]}")
+        raise ValueError(f"Unknown goban value {self._goban[y][x]}")
 
     def is_taken(self, x: int, y: int) -> bool:
         raise NotImplementedError
